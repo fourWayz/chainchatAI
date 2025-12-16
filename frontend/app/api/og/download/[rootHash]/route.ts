@@ -10,7 +10,7 @@ export async function GET(
     // Await the params Promise
     const { rootHash } = await params;
 
-    const INDEXER_RPC = process.env.NEXT_PUBLIC_INDEXER_RPC || 'https://indexer-storage-testnet-standard.0g.ai';
+    const INDEXER_RPC = process.env.NEXT_PUBLIC_INDEXER_RPC || 'https://indexer-storage-turbo.0g.aii';
     const indexer = new Indexer(INDEXER_RPC);
 
     // Create download path
