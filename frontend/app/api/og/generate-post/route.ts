@@ -6,7 +6,7 @@ import { createZGComputeNetworkBroker } from "@0glabs/0g-serving-broker";
 
 function initializeOGServices() {
   const PRIVATE_KEY = process.env.PRIVATE_KEY;
-  const rpcUrl = process.env.NEXT_PUBLIC_OG_RPC_URL!;
+  const rpcUrl = process.env.NEXT_PUBLIC_OG_TESTNET_RPC_URL!;
 
   if (!PRIVATE_KEY) throw new Error("Missing PRIVATE_KEY");
 
@@ -144,8 +144,8 @@ export async function POST(req: NextRequest) {
     // Verify the inference result
     const isValid = await broker.inference.processResponse(
       providerAddress,
-      content,
-      completion.id
+      completion.id,
+      content
     );
 
     return NextResponse.json({

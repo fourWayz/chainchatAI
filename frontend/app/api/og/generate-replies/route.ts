@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
         }
 
         const privateKey = process.env.PRIVATE_KEY!;
-        const rpcUrl = process.env.NEXT_PUBLIC_OG_RPC_URL!;
+        const rpcUrl = process.env.NEXT_PUBLIC_OG_TESTNET_RPC_URL!;
 
         const provider = new ethers.JsonRpcProvider(rpcUrl);
         const signer = new ethers.Wallet(privateKey, provider);
@@ -117,7 +117,7 @@ Requirements:
 
         const content = completion.choices[0].message.content || "[]";
 
-        const isValid = await broker.inference.processResponse(OG_PROVIDER, content, completion.id);
+        const isValid = await broker.inference.processResponse(OG_PROVIDER,completion.id,content);
 
         let replies: SmartReply[] = [];
 
