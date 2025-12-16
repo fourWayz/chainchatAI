@@ -22,7 +22,7 @@
     "crypto-browserify": "^3.12.1",
     "ethers": "^6.13.1",
     "lucide-react": "^0.544.0",
-    "next": "15.5.2",
+    "next": "15.5.9",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-hot-toast": "^2.6.0",
