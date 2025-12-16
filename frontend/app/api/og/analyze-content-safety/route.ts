@@ -77,11 +77,14 @@ export async function POST(req: NextRequest) {
 
         const isValid = await broker.inference.processResponse(OG_PROVIDER,completion.id,result);
 
-        return NextResponse.json({
-            success: true,
-            ...JSON.parse(result),
-            valid: isValid,
-        });
+         const cleaned = extractJson(result);
+            console.log("Relevance analysis result:", cleaned);
+        
+            return NextResponse.json({
+              success: true,
+              ...JSON.parse(cleaned),
+              valid: isValid,
+            });
 
     } catch (error: any) {
         console.error("Content safety analysis error:", error);
@@ -90,4 +93,21 @@ export async function POST(req: NextRequest) {
             { status: 500 }
         );
     }
+}
+
+function extractJson(text: string): string {
+  // Remove ```json ... ``` or ``` ... ```
+  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+  if (fenced && fenced[1]) {
+    return fenced[1];
+  }
+
+  // Fallback: try to find first JSON object
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+  if (start !== -1 && end !== -1 && end > start) {
+    return text.slice(start, end + 1);
+  }
+
+  return text;
 }

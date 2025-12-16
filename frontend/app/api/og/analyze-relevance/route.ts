@@ -52,17 +52,17 @@ export async function POST(req: NextRequest) {
     }
     `;
 
-     const openai = new OpenAI({
-          baseURL: endpoint,
-          apiKey: "",
-        });
+    const openai = new OpenAI({
+      baseURL: endpoint,
+      apiKey: "",
+    });
     const headers = await broker.inference.getRequestHeaders(OG_PROVIDER, prompt);
     const requestHeaders: Record<string, string> = {};
     Object.entries(headers).forEach(([k, v]) => {
       if (typeof v === "string") requestHeaders[k] = v;
     });
 
-    
+
     const completion = await openai.chat.completions.create(
       {
         model,
@@ -74,15 +74,18 @@ export async function POST(req: NextRequest) {
     );
 
     const content = completion.choices[0].message.content || "{}";
-    
-    const isValid = await broker.inference.processResponse(OG_PROVIDER,completion.id,content);
 
+    const isValid = await broker.inference.processResponse(OG_PROVIDER, completion.id, content);
+
+    const cleaned = extractJson(content);
+    console.log("Relevance analysis result:", cleaned);
 
     return NextResponse.json({
       success: true,
-      ...JSON.parse(content),
+      ...JSON.parse(cleaned),
       valid: isValid,
     });
+
 
   } catch (error: any) {
     console.error("Relevance analysis error:", error);
@@ -91,4 +94,21 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+function extractJson(text: string): string {
+  // Remove ```json ... ``` or ``` ... ```
+  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+  if (fenced && fenced[1]) {
+    return fenced[1];
+  }
+
+  // Fallback: try to find first JSON object
+  const start = text.indexOf("{");
+  const end = text.lastIndexOf("}");
+  if (start !== -1 && end !== -1 && end > start) {
+    return text.slice(start, end + 1);
+  }
+
+  return text;
 }
